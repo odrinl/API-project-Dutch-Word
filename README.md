@@ -1,6 +1,8 @@
 # API project "Dutch Word"
 ## Description
-Dictionary app where foreigner can find all you need about any Dutch word - pictures, pronunciations, explanation in and even all forms and tenses for verbs. I have been dreaming about this app for so long and now it times to make such a dreams come true.
+Dictionary app where foreigner can find all you need about any Dutch word - pictures, pronunciations, explanation in and even all forms for verbs. I have been dreaming about this app for so long and finally it's time to make this dream come true.
+## Design
+Very simple, I want it to look very light, for example like google result pages. Much more important is the ease of use and the content itself.
 ## Features
 ### Must have
 1. Create the project structure
