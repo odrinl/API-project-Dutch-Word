@@ -1,14 +1,19 @@
 document.getElementById('translate-button').addEventListener('click', translate);
 
 function translate() {
-    translateEn();
-    translateRu();
-}
-
-function translateEn() {
     var sourceText = document.getElementById('search-input').value;
     var sourceLang = 'nl';
-    var targetLang = 'en';
+    
+    // Define an array of target languages
+    var targetLanguages = ['en', 'ru', 'ur', 'ar'];
+
+    // Loop through the target languages and call the translateText function
+    targetLanguages.forEach(function(targetLang) {
+        translateText(sourceText, sourceLang, targetLang);
+    });
+}
+
+function translateText(sourceText, sourceLang, targetLang) {
     console.log(sourceText);
 
     var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + encodeURI(sourceText);
@@ -16,23 +21,9 @@ function translateEn() {
     fetch(url)
         .then(response => response.json())
         .then(data => {
-            document.getElementById('translated-word-en').textContent = data[0][0][0];
-        })
-        .catch(error => console.error('Error:', error));
-}
-
-function translateRu() {
-    var sourceText = document.getElementById('search-input').value;
-    var sourceLang = 'nl';
-    var targetLang = 'ru';
-    console.log(sourceText);
-
-    var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + encodeURI(sourceText);
-
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('translated-word-ru').textContent = data[0][0][0];
+            // Get the corresponding element based on the target language
+            var translatedWordElement = document.getElementById('translated-word-' + targetLang);
+            translatedWordElement.textContent = data[0][0][0];
         })
         .catch(error => console.error('Error:', error));
 }
