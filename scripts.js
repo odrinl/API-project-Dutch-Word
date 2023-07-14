@@ -6,7 +6,7 @@ function translate() {
     const sourceLang = 'nl';
     
     // Define an array of target languages
-    const targetLanguages = ['en', 'ru', 'ur', 'ar'];
+    const targetLanguages = ['en', 'ru', 'ur', 'ar', 'tr'];
 
     // Loop through the target languages and call the translateText function
     targetLanguages.forEach(function(targetLang) {
