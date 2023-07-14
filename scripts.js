@@ -22,7 +22,7 @@ function translateText(sourceText, sourceLang, targetLang) {
         .then(response => response.json())
         .then(data => {
             // Get the corresponding element based on the target language
-            var translatedWordElement = document.getElementById('translated-word-' + targetLang);
+            let translatedWordElement = document.getElementById('translated-word-' + targetLang);
             translatedWordElement.textContent = data[0][0][0];
         })
         .catch(error => console.error('Error:', error));
