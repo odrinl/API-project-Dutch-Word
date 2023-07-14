@@ -1,0 +1,62 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #333333;
+}
+
+#search-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 100px;
+}
+
+#search-container img {
+  width: 100px;
+  margin-bottom: 10px;
+  margin-right: 10px;
+}
+
+#search-input {
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 2px solid #48bed8;
+  border-radius: 24px;
+}
+
+#search-input:focus {
+  border-color: rgba(32, 33, 36, 0.35);
+  box-shadow: 0 0 0 3px rgba(32, 33, 36, 0.15);
+}
+
+#translate-button {
+  height: 40px;
+  margin-top: 20px;
+  padding: 0 20px;
+  font-size: 16px;
+  font-weight: bolder;
+  background-color: #fce0a2;
+  color: #333333;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+}
+
+#translate-button:hover {
+  background-color: #c8a36f; 
+}
+
+#translation-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  color: #F5D961;
+}
+
+#translated-word {
+  font-size: 24px;
+  
+}
