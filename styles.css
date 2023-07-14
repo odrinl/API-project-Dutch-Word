@@ -9,7 +9,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 100px;
+  margin-top: 50px;
 }
 
 #search-container img {
@@ -49,14 +49,25 @@ body {
 
 #translation-container {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
   margin-top: 20px;
   color: #F5D961;
 }
 
 #translated-word {
   font-size: 24px;
-  
+}
+
+#images-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#images-container img {
+  width: 30%;
+  margin: 10px;
+  object-fit: scale-down;
 }
