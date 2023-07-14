@@ -1,11 +1,11 @@
 document.getElementById('translate-button').addEventListener('click', translate);
 
 function translate() {
-    var sourceText = document.getElementById('search-input').value;
-    var sourceLang = 'nl';
+    const sourceText = document.getElementById('search-input').value;
+    const sourceLang = 'nl';
     
     // Define an array of target languages
-    var targetLanguages = ['en', 'ru', 'ur', 'ar'];
+    const targetLanguages = ['en', 'ru', 'ur', 'ar'];
 
     // Loop through the target languages and call the translateText function
     targetLanguages.forEach(function(targetLang) {
@@ -16,7 +16,7 @@ function translate() {
 function translateText(sourceText, sourceLang, targetLang) {
     console.log(sourceText);
 
-    var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + encodeURI(sourceText);
+    let url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + encodeURI(sourceText);
 
     fetch(url)
         .then(response => response.json())
