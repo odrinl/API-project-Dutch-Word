@@ -49,14 +49,12 @@ body {
 
 #translation-container {
   display: flex;
+  flex-wrap: wrap;
+  font-size: 18px;
   align-items: center;
   justify-content: space-evenly;
   margin-top: 20px;
   color: #F5D961;
-}
-
-#translated-word {
-  font-size: 24px;
 }
 
 #images-container {
@@ -71,3 +69,31 @@ body {
   margin: 10px;
   object-fit: scale-down;
 }
+p {
+  margin: 5px;
+}
+#article-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color:rgb(226, 222, 214);
+  margin: 0 20px;
+}
+
+.title {
+  margin-top: 20px;
+  margin-bottom: 5px;
+  color: #48bed8;
+  font-size: 18px;
+  text-align: center;
+}
+
+footer {
+  text-align: center;
+  color: #011318;
+  font-size: 18px;
+  text-align: center;
+  margin: 40px 0;
+
+}
+

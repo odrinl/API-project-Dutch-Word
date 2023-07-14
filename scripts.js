@@ -20,6 +20,8 @@ function translate() {
     });
     // Call the function to fetch and display related images
     fetchImages(sourceText);
+    // Call the function to fetch and display Wikipedia article
+    fetchArticle(sourceText, 'nl');   
 }
 
 function translateText(sourceText, sourceLang, targetLang) {
@@ -62,3 +64,25 @@ function fetchImages(query) {
         })
         .catch(error => console.error('Error:', error));
 }
+
+function fetchArticle(query, lang) {
+    const URL = `https://${lang}.wikipedia.org/w/api.php?action=query&origin=*&prop=extracts&format=json&exintro=&titles=${encodeURIComponent(
+      query
+    )}`;
+  
+    fetch(URL)
+      .then(response => response.json())
+      .then(data => {
+        const pages = data.query.pages;
+        const pageIds = Object.keys(pages);
+        if (pageIds.length > 0) {
+          const pageId = pageIds[0];
+          const extract = pages[pageId].extract;
+  
+          const articleContainer = document.getElementById('article-container');
+          articleContainer.innerHTML = extract;
+        }
+      })
+      .catch(error => console.error('Error:', error));
+  
+  }
