@@ -7,16 +7,18 @@ Very simple, I want it to look very light, for example like google result pages.
 ### Must have
 1. Create the project structure
 2. Create a field for user request (Dutch word)
-3. Create the schema for searching results:
-- translation to English
-- sound file with pronunciation
-- NL-NL translation
-- images
-- wiki page for this word (if it exists)
-- word in context
+3. Create the schema for translation this word to English
 
 ### Nice to have
 1. translations to Ukrainian, Russian, Arabic, Tigrinya, Turkish
-2. If the word is a verb - show all forms of this verb
-3. Show the list of synonyms
-4. Add a feature that you can check and uncheck desirable searching recourses
+2. NL-NL explanation (as in Van Dale dictionary)
+
+### Additional ideas (for future)
+
+- Sound file with pronunciation
+- Related images
+- wiki page for this word (if it exists)
+- word in context
+- If the word is a verb - show all forms of this verb
+- Show the list of synonyms
+- Add a feature for checking and unchecking desirable searching recourses
