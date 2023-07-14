@@ -1,5 +1,11 @@
 
 document.getElementById('translate-button').addEventListener('click', translate);
+document.getElementById('search-input').addEventListener('keypress', (event) => {
+    if (event.key === 'Enter') {
+      translate();
+    }
+  });
+  
 
 function translate() {
     const sourceText = document.getElementById('search-input').value;
