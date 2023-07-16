@@ -2,7 +2,7 @@ Link - https://odrinl.github.io/API-project-Dutch-Word/
 
 # API project "Dutch Word"
 ## Description
-Dictionary app where foreigner can find all you need about any Dutch word - pictures, pronunciations, explanation and even all forms for verbs. I have been dreaming about this app for so long and finally it's time to make this dream come true.
+Client-side web application. Dictionary app where foreigner can find all you need about any Dutch word - pictures, pronunciations, explanation and even all forms for verbs. I have been dreaming about this app for so long and finally it's time to make this dream come true.
 ## Design
 Very simple, I want it to look very light, for example like google result pages. Much more important is the ease of use and the content itself.
 ## Features
