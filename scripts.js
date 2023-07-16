@@ -40,9 +40,8 @@ function translateText(sourceText, sourceLang, targetLang) {
 }
 
 function fetchImages(query) {
-    const API_KEY_PIXABAY;
     const perPage = 5;
-    const URL = `https://pixabay.com/api/?key=${API_KEY}&q=${encodeURIComponent(
+    const URL = `https://pixabay.com/api/?key=${{ API_KEY_PIXABAY }}&q=${encodeURIComponent(
         query
     )}&lang=nl&image_type=photo&safesearch=true&per_page=${perPage}`;
 
