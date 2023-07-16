@@ -40,7 +40,7 @@ function translateText(sourceText, sourceLang, targetLang) {
 }
 
 function fetchImages(query) {
-    const API_KEY = '38259307-8733456e700ed630a3379faf0';
+    const API_KEY_PIXABAY;
     const perPage = 5;
     const URL = `https://pixabay.com/api/?key=${API_KEY}&q=${encodeURIComponent(
         query
