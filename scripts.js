@@ -12,6 +12,12 @@ document
 function translate() {
   
   const sourceText = document.getElementById("search-input").value;
+
+  // Check if the source text is empty
+  if (sourceText.trim() === "") {
+    return; // Exit the function if the input is empty
+  }
+
   const sourceLang = "nl";
 
   // Save the current search query to the browser history
@@ -102,14 +108,20 @@ function fetchDeHetWord(word) {
   const fetchDeHetWord = document.getElementById("search-input").value;
   
   let url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=nl&dt=t&q=the ${fetchDeHetWord}`;
+  
 
   fetch(url)
     .then((response) => response.json())
     .then((data) => {
       const dehetContainer = document.getElementById("dehet-container");
       dehetContainer.textContent = data[0][0][0];
+      const dehetContent = dehetContainer.textContent.trim();
+      const firstWord = dehetContent.split(' ')[0];
+  
+      dehetContainer.innerHTML = dehetContent.replace(firstWord, `<span class="first-word">${firstWord}</span>`);
     })
     .catch((error) => console.error("Error:", error));
+
   
 }
 

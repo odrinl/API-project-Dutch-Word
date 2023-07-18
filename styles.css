@@ -58,10 +58,19 @@ body {
 }
 
 #dehet-container {
+  padding: 10px;
   display: flex;
   justify-content: center;
-  color:rgb(226, 222, 214)
+  font-size: 18px;
+  color:#f5d961;
 }
+
+.first-word {
+  font-style: italic;
+  color: #79c379;
+  margin-right: 8px;
+}
+
 
 #images-container {
   display: flex;
