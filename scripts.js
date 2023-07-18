@@ -30,6 +30,8 @@ function translate() {
   targetLanguages.forEach(function (targetLang) {
     translateText(sourceText, sourceLang, targetLang);
   });
+  // call the function to show het or de word
+  fetchDeHetWord(sourceText);
   // Call the function to fetch and display related images
   fetchImages(sourceText);
   // Call the function to fetch and display Wikipedia article
@@ -50,6 +52,8 @@ window.onpopstate = function (event) {
       targetLanguages.forEach(function (targetLang) {
         translateText(query, lang, targetLang);
       });
+      // call the function to show het or de word
+      fetchDeHetWord(query);
       // Call the function to fetch and display related images
       fetchImages(query);
       // Call the function to fetch and display Wikipedia article
@@ -76,6 +80,46 @@ function translateText(sourceText, sourceLang, targetLang) {
       translatedWordElement.textContent = data[0][0][0];
     })
     .catch((error) => console.error("Error:", error));
+}
+
+function fetchDeHetWord(sourceText) {
+
+  let targetURL = `https://www.ensie.nl/de-of-het/${encodeURIComponent(sourceText)}?&q=${encodeURIComponent(sourceText)}`;
+
+  // Prepend the general CORS proxy URL
+  // const corsProxyURL = "http://cors-anywhere.herokuapp.com/" + targetURL; 
+
+  // Perform the fetch with the necessary headers
+  fetch(targetURL, 
+    // {
+  //   headers: {
+  //     "Origin": "https://www.ensie.nl/de-of-het/" // Replace with your actual origin URL
+  //   }
+  // }
+  )
+    .then((response) => response.text())
+    .then(html => {
+      // Create a temporary element to parse the HTML
+      const tempElement = document.createElement("div");
+      tempElement.innerHTML = html;
+  
+      // Find the desired element within the parsed HTML
+      const resultElement = tempElement.querySelector("h4.mb-4");
+  
+      // Extract the context from the result element
+      const dehetContext = resultElement.textContent;
+  
+      // Display the context on the page
+      const dehetContainer = document.getElementById("dehet-container");
+      dehetContainer.textContent = dehetContext;
+  
+      // Clean up the temporary element
+      tempElement.remove();
+    })
+    .catch(error => {
+      // Handle any errors that occur during the fetch
+      console.error("Error:", error);
+    });
 }
 
 function fetchImages(query) {
@@ -127,22 +171,28 @@ function fetchArticle(query, lang) {
         liElements.forEach((liElement) => {
           // Get the text content of the <li> element
           const liText = liElement.textContent;
-
-          // Split the text into words
-          const words = liText.trim().split(" ");
-
-          // Get the first two words
-          const linkWords = words.slice(0, 2);
-
+          
           // Create a <a> element for the clickable link
           const linkElement = document.createElement("a");
           linkElement.id = "wiki-link";
-          linkElement.textContent = linkWords.join(" ");
-
           // Apply formatting to the link element
           linkElement.style.textDecoration = "underline";
           linkElement.style.cursor = "pointer";
           linkElement.style.color = "blue";
+
+          // Split the text into words
+          const words = liText.trim().split(" ");
+
+          
+          if (words.length <= 2) {
+            liElement.innerHTML = linkElement.outerHTML;
+          }
+
+          // Get the first two words
+          const linkWords = words.slice(0, 2);
+
+         
+          linkElement.textContent = linkWords.join(" ");
 
           // Replace the first two words with the link element
           const modifiedText = liText.replace(

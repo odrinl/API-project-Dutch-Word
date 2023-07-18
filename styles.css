@@ -44,7 +44,7 @@ body {
 }
 
 #translate-button:hover {
-  background-color: #c8a36f; 
+  background-color: #c8a36f;
 }
 
 #translation-container {
@@ -54,8 +54,20 @@ body {
   align-items: center;
   justify-content: space-evenly;
   margin-top: 20px;
-  color: #F5D961;
+  color: #f5d961;
 }
+
+#dehet-container {
+  display: flex;
+  justify-content: center;
+  color:rgb(226, 222, 214)
+}
+
+#dehet-container::first-word {
+  font-weight: bold;
+  color: rgb(171, 67, 104);
+}
+
 
 #images-container {
   display: flex;
@@ -72,11 +84,12 @@ body {
 p {
   margin: 5px;
 }
+
 #article-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  color:rgb(226, 222, 214);
+  color: rgb(226, 222, 214);
   margin: 0 20px;
 }
 
@@ -94,6 +107,4 @@ footer {
   font-size: 18px;
   text-align: center;
   margin: 40px 0;
-
 }
-
