@@ -206,18 +206,20 @@ function fetchArticle(query, lang) {
               }
               linkWords.push(word);
             }
-        
             const linkWordsText = linkWords.join('');
             linkElement.textContent = linkWordsText;
             const modifiedText = liText.replace(linkWordsText, linkElement.outerHTML);
             liElement.innerHTML = modifiedText;
-          liElement.addEventListener("click", () => {
-            const searchInput = document.getElementById("search-input");
-            searchInput.value = linkWordsText;
-            const translateButton = document.getElementById("translate-button");
-            translateButton.click();
-          });
-        }
+            const wikiLinkElement = liElement.querySelector("#wiki-link");
+            
+            wikiLinkElement.addEventListener("click", () => {
+              const searchInput = document.getElementById("search-input");
+              searchInput.value = wikiLinkElement.textContent;
+              const translateButton = document.getElementById("translate-button");
+              translateButton.click();
+            });
+          }
+          
         });
       }
     })
