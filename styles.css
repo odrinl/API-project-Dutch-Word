@@ -63,12 +63,6 @@ body {
   color:rgb(226, 222, 214)
 }
 
-#dehet-container::first-word {
-  font-weight: bold;
-  color: rgb(171, 67, 104);
-}
-
-
 #images-container {
   display: flex;
   flex-direction: row;

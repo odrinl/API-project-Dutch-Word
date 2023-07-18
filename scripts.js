@@ -19,7 +19,7 @@ function translate() {
     query: sourceText,
     lang: sourceLang
   };
-  history.pushState(currentState, "", `?q=${encodeURIComponent(sourceText)}`);
+  history.pushState(currentState, "", `?q=${sourceText}`);
 
 
 
@@ -27,15 +27,22 @@ function translate() {
   const targetLanguages = ["en", "ru", "ur", "ar", "tr"];
 
   // Loop through the target languages and call the translateText function
-  targetLanguages.forEach(function (targetLang) {
-    translateText(sourceText, sourceLang, targetLang);
-  });
-  // call the function to show het or de word
+  const translationPromises = targetLanguages.map((targetLang) =>
+  translateText(sourceText, sourceLang, targetLang)
+);
+
+ // Wait for all the translation promises to resolve
+Promise.all(translationPromises)
+.then(() => {
+  // All translations are completed
+  // Call the function to fetch the "het" or "de" word
   fetchDeHetWord(sourceText);
   // Call the function to fetch and display related images
   fetchImages(sourceText);
   // Call the function to fetch and display Wikipedia article
   fetchArticle(sourceText, "nl");
+})
+.catch((error) => console.error("Error:", error));
 }
 
 // Handle the popstate event when the back or forward button is clicked
@@ -43,23 +50,31 @@ window.onpopstate = function (event) {
   if (event.state) {
     const { query, lang } = event.state;
     document.getElementById("search-input").value = query;
-    const sourceLang = lang;    
-    
-      // Define an array of target languages
-      const targetLanguages = ["en", "ru", "ur", "ar", "tr"];
-    
-      // Loop through the target languages and call the translateText function
-      targetLanguages.forEach(function (targetLang) {
-        translateText(query, lang, targetLang);
-      });
-      // call the function to show het or de word
-      fetchDeHetWord(query);
-      // Call the function to fetch and display related images
-      fetchImages(query);
-      // Call the function to fetch and display Wikipedia article
-      fetchArticle(query, lang);
-    }
+    const sourceLang = lang;
+
+    // Define an array of target languages
+    const targetLanguages = ["en", "ru", "ur", "ar", "tr"];
+
+    // Loop through the target languages and create an array of translation promises
+    const translationPromises = targetLanguages.map((targetLang) =>
+      translateText(query, lang, targetLang)
+    );
+
+    // Wait for all the translation promises to resolve
+    Promise.all(translationPromises)
+      .then(() => {
+        // All translations are completed
+        // Call the function to fetch the "hwt" or "de" word
+        fetchDeHetWord(query);
+        // Call the function to fetch and display related images
+        fetchImages(query);
+        // Call the function to fetch and display Wikipedia article
+        fetchArticle(query, lang);
+      })
+      .catch((error) => console.error("Error:", error));
   }
+};
+
 
 function translateText(sourceText, sourceLang, targetLang) {
   let url =
@@ -68,9 +83,10 @@ function translateText(sourceText, sourceLang, targetLang) {
     "&tl=" +
     targetLang +
     "&dt=t&q=" +
-    encodeURI(sourceText);
+    sourceText;
 
-  fetch(url)
+  // Return the fetch promise
+  return fetch(url)
     .then((response) => response.json())
     .then((data) => {
       // Get the corresponding element based on the target language
@@ -82,45 +98,21 @@ function translateText(sourceText, sourceLang, targetLang) {
     .catch((error) => console.error("Error:", error));
 }
 
-function fetchDeHetWord(sourceText) {
-
-  let targetURL = `https://www.ensie.nl/de-of-het/${encodeURIComponent(sourceText)}?&q=${encodeURIComponent(sourceText)}`;
-
-  // Prepend the general CORS proxy URL
-  // const corsProxyURL = "http://cors-anywhere.herokuapp.com/" + targetURL; 
-
-  // Perform the fetch with the necessary headers
-  fetch(targetURL, 
-    // {
-  //   headers: {
-  //     "Origin": "https://www.ensie.nl/de-of-het/" // Replace with your actual origin URL
-  //   }
-  // }
-  )
-    .then((response) => response.text())
-    .then(html => {
-      // Create a temporary element to parse the HTML
-      const tempElement = document.createElement("div");
-      tempElement.innerHTML = html;
+function fetchDeHetWord(word) {
+  const fetchDeHetWord = document.getElementById("search-input").value;
   
-      // Find the desired element within the parsed HTML
-      const resultElement = tempElement.querySelector("h4.mb-4");
-  
-      // Extract the context from the result element
-      const dehetContext = resultElement.textContent;
-  
-      // Display the context on the page
+  let url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=nl&dt=t&q=the ${fetchDeHetWord}`;
+
+  fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
       const dehetContainer = document.getElementById("dehet-container");
-      dehetContainer.textContent = dehetContext;
-  
-      // Clean up the temporary element
-      tempElement.remove();
+      dehetContainer.textContent = data[0][0][0];
     })
-    .catch(error => {
-      // Handle any errors that occur during the fetch
-      console.error("Error:", error);
-    });
+    .catch((error) => console.error("Error:", error));
+  
 }
+
 
 function fetchImages(query) {
   const API_KEY = "38259307-8733456e700ed630a3379faf0";
@@ -169,75 +161,51 @@ function fetchArticle(query, lang) {
 
         // Iterate over each <li> element
         liElements.forEach((liElement) => {
-          // Get the text content of the <li> element
           const liText = liElement.textContent;
+          const words = liText.split(/(\b|\s+|[()]|[,]|[-])(?<!\w-)(?!\s+)/).filter(Boolean);
+
+          let linkWords = [];
+          const stopElements = ["),", ")", ",", "-"];
+          let foundStopElement = false;
+
+          if (words.some(word => stopElements.includes(word)) || words.length < 4) {
+
+            const linkElement = document.createElement("a");
+            linkElement.id = "wiki-link";
+            linkElement.style.textDecoration = "underline";
+            linkElement.style.cursor = "pointer";
+            linkElement.style.color = "#48bed8";
+              
           
-          // Create a <a> element for the clickable link
-          const linkElement = document.createElement("a");
-          linkElement.id = "wiki-link";
-          // Apply formatting to the link element
-          linkElement.style.textDecoration = "underline";
-          linkElement.style.cursor = "pointer";
-          linkElement.style.color = "blue";
-
-          // Split the text into words
-          const words = liText.trim().split(" ");
-
-          
-          if (words.length <= 2) {
-            liElement.innerHTML = linkElement.outerHTML;
-          }
-
-          // Get the first two words
-          const linkWords = words.slice(0, 2);
-
-         
-          linkElement.textContent = linkWords.join(" ");
-
-          // Replace the first two words with the link element
-          const modifiedText = liText.replace(
-            linkWords.join(" "),
-            linkElement.outerHTML
-          );
-
-          // Check if there's a comma after the second word
-          const commaIndex = modifiedText.indexOf(
-            ",",
-            linkWords.join(" ").length
-          );
-          // Check if there's a hyphen after the second word
-          const hyphenIndex = modifiedText.indexOf(
-            " -",
-            linkWords.join(" ").length
-          );
-          if (commaIndex !== -1) {
-            // Remove the comma from the link element
-            const linkElementText = modifiedText.substring(
-              modifiedText.indexOf(">") + 1,
-              commaIndex
-            );
-            linkElement.textContent = linkElementText.trim();
-          }
-          if (hyphenIndex !== -1) {
-            // Remove the hyphen from the link element
-            const linkElementText = modifiedText.substring(
-              modifiedText.indexOf(">") + 1,
-              hyphenIndex - 4
-            );
-            linkElement.textContent = linkElementText.trim();
+            for (let i = 0; i < words.length; i++) {
+              const word = words[i];
+              if (stopElements.includes(word)) {
+                foundStopElement = true;
+                if (word === "-") {
+                  linkWords.pop(); // Remove the space before hyphen
+                }
+                if (word === ")") {
+                  linkWords.push(")"); 
+                }
+                if (word === "),") {
+                  linkWords.push(")"); // Add ")" without the comma
+                } 
+                break;
+              }
+              linkWords.push(word);
             }
-
-          // Update the content of the <li> element
-          liElement.innerHTML = modifiedText;
-
-          // Add click event listener to the link element
+        
+            const linkWordsText = linkWords.join('');
+            linkElement.textContent = linkWordsText;
+            const modifiedText = liText.replace(linkWordsText, linkElement.outerHTML);
+            liElement.innerHTML = modifiedText;
           liElement.addEventListener("click", () => {
             const searchInput = document.getElementById("search-input");
-            searchInput.value = linkElement.textContent;
-            // Click the translate button automatically
+            searchInput.value = linkWordsText;
             const translateButton = document.getElementById("translate-button");
             translateButton.click();
           });
+        }
         });
       }
     })
