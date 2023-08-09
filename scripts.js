@@ -1,227 +1,280 @@
-document
-  .getElementById("translate-button")
-  .addEventListener("click", translate);
-document
-  .getElementById("search-input")
-  .addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-      translate();
-    }
-  });
+const translateButton = document.getElementById("translate-button");
+const searchInput = document.getElementById("search-input");
+const loadingIndicator = document.getElementById("loading");
+const errorContainer = document.getElementById("error");
+const targetLanguages = ["en", "ru", "ur", "ar", "tr"];
 
-function translate() {
-  
-  const sourceText = document.getElementById("search-input").value;
+// Event listener for translate button click
+translateButton.addEventListener("click", main);
 
-  // Check if the source text is empty
-  if (sourceText.trim() === "") {
-    return; // Exit the function if the input is empty
+// Event listener for search input keydown
+searchInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    main();
   }
+});
 
-  const sourceLang = "nl";
-
-  // Save the current search query to the browser history
-  const currentState = {
-    query: sourceText,
-    lang: sourceLang
-  };
-  history.pushState(currentState, "", `?q=${sourceText}`);
-
-
-
-  // Define an array of target languages
-  const targetLanguages = ["en", "ru", "ur", "ar", "tr"];
-
-  // Loop through the target languages and call the translateText function
-  const translationPromises = targetLanguages.map((targetLang) =>
-  translateText(sourceText, sourceLang, targetLang)
-);
-
- // Wait for all the translation promises to resolve
-Promise.all(translationPromises)
-.then(() => {
-  // All translations are completed
-  // Call the function to fetch the "het" or "de" word
-  fetchDeHetWord(sourceText);
-  // Call the function to fetch and display related images
-  fetchImages(sourceText);
-  // Call the function to fetch and display Wikipedia article
-  fetchArticle(sourceText, "nl");
-})
-.catch((error) => console.error("Error:", error));
+// Display loading indicator
+function showLoadingIndicator() {
+  loadingIndicator.style.display = "block";
+  errorContainer.style.display = "none";
 }
 
-// Handle the popstate event when the back or forward button is clicked
-window.onpopstate = function (event) {
-  if (event.state) {
-    const { query, lang } = event.state;
-    document.getElementById("search-input").value = query;
-    const sourceLang = lang;
+// Hide loading indicator
+function hideLoadingIndicator() {
+  loadingIndicator.style.display = "none";
+}
 
-    // Define an array of target languages
-    const targetLanguages = ["en", "ru", "ur", "ar", "tr"];
+// Display error messages
+function displayErrorMessages(errorMessages) {
+  errorContainer.innerText = errorMessages.join("\n");
+  console.error("Errors:", errorMessages.join("\n"));
+  errorContainer.style.display = "block";
+  hideLoadingIndicator();
+}
 
-    // Loop through the target languages and create an array of translation promises
-    const translationPromises = targetLanguages.map((targetLang) =>
-      translateText(query, lang, targetLang)
+// Handle rejected promises
+function handleRejectedPromises(results) {
+  const errorMessages = [];
+  const rejectedPromiseIndices = results
+    .map((result, index) => ({ result, index }))
+    .filter(({ result }) => result.status === "rejected")
+    .map(({ index }) => index);
+
+  if (rejectedPromiseIndices.length > 0) {
+    rejectedPromiseIndices.forEach((index) => {
+      const errorMessage = `Error in function [${index}] ${
+        results[index].reason.message
+      }`;
+      errorMessages.push(errorMessage);
+    });
+    displayErrorMessages(errorMessages);
+  }
+}
+
+// Function to translate text
+async function translateText(sourceText, sourceLang, targetLang) {
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(
+    sourceText
+  )}`;
+
+  try {
+    const fetchResponse = await fetch(url);
+    const responseData = await fetchResponse.json();
+    const translatedWordElement = document.getElementById(
+      `translated-word-${targetLang}`
     );
-
-    // Wait for all the translation promises to resolve
-    Promise.all(translationPromises)
-      .then(() => {
-        // All translations are completed
-        // Call the function to fetch the "hwt" or "de" word
-        fetchDeHetWord(query);
-        // Call the function to fetch and display related images
-        fetchImages(query);
-        // Call the function to fetch and display Wikipedia article
-        fetchArticle(query, lang);
-      })
-      .catch((error) => console.error("Error:", error));
+    translatedWordElement.textContent = responseData[0][0][0];
+  } catch (error) {
+    console.error("Error:", error);
+    // Re-throw the error to handle it in the parent function (main)
+    throw new Error(`translateText ${sourceLang}-${targetLang}: ${error.message}.`); 
   }
-};
-
-
-function translateText(sourceText, sourceLang, targetLang) {
-  let url =
-    "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" +
-    sourceLang +
-    "&tl=" +
-    targetLang +
-    "&dt=t&q=" +
-    sourceText;
-
-  // Return the fetch promise
-  return fetch(url)
-    .then((response) => response.json())
-    .then((data) => {
-      // Get the corresponding element based on the target language
-      let translatedWordElement = document.getElementById(
-        `translated-word-${targetLang}`
-      );
-      translatedWordElement.textContent = data[0][0][0];
-    })
-    .catch((error) => console.error("Error:", error));
 }
 
-function fetchDeHetWord(word) {
-  const fetchDeHetWord = document.getElementById("search-input").value;
-  
-  let url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=nl&dt=t&q=the ${fetchDeHetWord}`;
-  
+// Function to fetch "de/het" word
+async function fetchDeHetWord(word) {
+  const fetchDeHetWord = searchInput.value;
 
-  fetch(url)
-    .then((response) => response.json())
-    .then((data) => {
-      const dehetContainer = document.getElementById("dehet-container");
-      dehetContainer.textContent = data[0][0][0];
-      const dehetContent = dehetContainer.textContent.trim();
-      const firstWord = dehetContent.split(' ')[0];
-  
-      dehetContainer.innerHTML = dehetContent.replace(firstWord, `<span class="first-word">${firstWord}</span>`);
-    })
-    .catch((error) => console.error("Error:", error));
+  // Construct the URL for fetching the "de/het" word
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=nl&dt=t&q=the ${fetchDeHetWord}`;
 
-  
+  try {
+    const fetchResponse = await fetch(url);
+    const responseData = await fetchResponse.json();
+    const dehetContainer = document.getElementById("dehet-container");
+    dehetContainer.textContent = responseData[0][0][0];
+
+    // Highlight the first word in the "de/het" word
+    const firstPageExtract = dehetContainer.textContent.trim();
+    const firstWord = firstPageExtract.split(' ')[0];
+    dehetContainer.innerHTML = firstPageExtract.replace(firstWord, `<span class="first-word">${firstWord}</span>`);
+  } catch (error) {
+    console.error("Error:", error);
+    // Re-throw the error to handle it in the parent function (main)
+    throw new Error(`fetchDeHetWord: ${error.message}.`); 
+  }
 }
-
-
-function fetchImages(query) {
+// Function to fetch images
+async function fetchImages(query) {
   const API_KEY = "38259307-8733456e700ed630a3379faf0";
   const perPage = 5;
   const URL = `https://pixabay.com/api/?key=${API_KEY}&q=${encodeURIComponent(
     query
   )}&lang=nl&image_type=photo&safesearch=true&per_page=${perPage}`;
 
-  fetch(URL)
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.hits.length > 0) {
-        const imagesContainer = document.getElementById("images-container");
-        imagesContainer.innerHTML = ""; // Clear existing content
+  try {
+    const fetchResponse = await fetch(URL);
+    const responseData = await fetchResponse.json();
 
-        data.hits.forEach((hit) => {
-          const imgElement = document.createElement("img");
-          imgElement.src = hit.webformatURL;
-          imgElement.alt = hit.tags;
-          imgElement.classList.add("image");
-          imagesContainer.appendChild(imgElement);
-        });
-      }
-    })
-    .catch((error) => console.error("Error:", error));
+    if (responseData.hits.length > 0) {
+      const imagesContainer = document.getElementById("images-container");
+      imagesContainer.innerHTML = ""; // Clear existing content
+
+      // Create and append image elements to the images container
+      responseData.hits.forEach((hit) => {
+        const imgElement = document.createElement("img");
+        imgElement.src = hit.webformatURL;
+        imgElement.alt = hit.tags;
+        imgElement.classList.add("image");
+        imagesContainer.appendChild(imgElement);
+      });
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    // Re-throw the error to handle it in the parent function (main)
+    throw new Error(`fetchImages: ${error.message}.`); 
+  }
 }
 
-function fetchArticle(query, lang) {
+
+// Function to fetch Wikipedia article
+async function fetchArticle(query, lang) {
   const URL = `https://${lang}.wikipedia.org/w/api.php?action=query&origin=*&prop=extracts&format=json&exintro=&titles=${encodeURIComponent(
     query
   )}`;
 
-  fetch(URL)
-    .then((response) => response.json())
-    .then((data) => {
-      const pages = data.query.pages;
-      const pageIds = Object.keys(pages);
-      if (pageIds.length > 0) {
-        const pageId = pageIds[0];
-        const extract = pages[pageId].extract;
+  try {
+    const fetchResponse = await fetch(URL);
+    const responseData = await fetchResponse.json();
 
-        const articleContainer = document.getElementById("article-container");
-        articleContainer.innerHTML = extract;
-        // Find all <li> elements within the article container
-        const liElements = document.querySelectorAll("#article-container li");
+    const queryPages = responseData.query.pages;
+    const pageKeys = Object.keys(queryPages);
 
-        // Iterate over each <li> element
-        liElements.forEach((liElement) => {
-          const liText = liElement.textContent;
-          const words = liText.split(/(\b|\s+|[()]|[,]|[-])(?<!\w-)(?!\s+)/).filter(Boolean);
+    // Check if there are any pages
+    if (pageKeys.length > 0) {
+      const firstPageId = pageKeys[0];
+      const firstPageExtract = queryPages[firstPageId].extract;
 
-          let linkWords = [];
-          const stopElements = ["),", ")", ",", "-"];
-          let foundStopElement = false;
+      const articleContainer = document.getElementById("article-container");
+      articleContainer.innerHTML = firstPageExtract;
 
-          if (words.some(word => stopElements.includes(word)) || words.length < 4) {
+      // Find all <li> elements within the article container
+      const listElements = document.querySelectorAll("#article-container li");
 
-            const linkElement = document.createElement("a");
-            linkElement.id = "wiki-link";
-            linkElement.style.textDecoration = "underline";
-            linkElement.style.cursor = "pointer";
-            linkElement.style.color = "#48bed8";
-              
-          
-            for (let i = 0; i < words.length; i++) {
-              const word = words[i];
-              if (stopElements.includes(word)) {
-                foundStopElement = true;
-                if (word === "-") {
-                  linkWords.pop(); // Remove the space before hyphen
-                }
-                if (word === ")") {
-                  linkWords.push(")"); 
-                }
-                if (word === "),") {
-                  linkWords.push(")"); // Add ")" without the comma
-                } 
-                break;
+      // Iterate over each <li> element
+      listElements.forEach((listElement) => {
+        const listElementText = listElement.textContent;
+        const listElementWords = listElementText
+          .split(/(\b|\s+|[()]|[,]|[-])(?<!\w-)(?!\s+)/)
+          .filter(Boolean);
+
+        let linkTextWords = [];
+        const stopWords = ["),", ")", ",", "-"];
+        let hasStopElement = false;
+
+        // Check if the words contain stop elements or if the length is less than 4
+        if (listElementWords.some((word) => stopWords.includes(word)) || listElementWords.length < 4) {
+          const linkElement = document.createElement("a");
+          linkElement.id = "wiki-link";
+          linkElement.style.textDecoration = "underline";
+          linkElement.style.cursor = "pointer";
+          linkElement.style.color = "#48bed8";
+
+          // Iterate over each word
+          for (const word of listElementWords) {
+            if (stopWords.includes(word)) {
+              hasStopElement = true;
+
+              // Handle different stop elements
+              if (word === "-") {
+                linkTextWords.pop(); // Remove the space before hyphen
               }
-              linkWords.push(word);
+              if (word === ")") {
+                linkTextWords.push(")");
+              }
+              if (word === "),") {
+                linkTextWords.push(")"); // Add ")" without the comma
+              }
+              break;
             }
-            const linkWordsText = linkWords.join('');
-            linkElement.textContent = linkWordsText;
-            const modifiedText = liText.replace(linkWordsText, linkElement.outerHTML);
-            liElement.innerHTML = modifiedText;
-            const wikiLinkElement = liElement.querySelector("#wiki-link");
-            
-            wikiLinkElement.addEventListener("click", () => {
-              const searchInput = document.getElementById("search-input");
-              searchInput.value = wikiLinkElement.textContent;
-              const translateButton = document.getElementById("translate-button");
-              translateButton.click();
-            });
+            linkTextWords.push(word);
           }
-          
-        });
-      }
-    })
-    .catch((error) => console.error("Error:", error));
+
+          const linkWordsText = linkTextWords.join("");
+          linkElement.textContent = linkWordsText;
+          const modifiedText = listElementText.replace(linkWordsText, linkElement.outerHTML);
+          listElement.innerHTML = modifiedText;
+          const wikiLinkElement = listElement.querySelector("#wiki-link");
+
+          // Add click event listener to the link element
+          wikiLinkElement.addEventListener("click", () => {
+            searchInput.value = wikiLinkElement.textContent;
+            translateButton.click();
+          });
+        }
+      });
+    }
+  } catch (error) {
+    // Re-throw the error to handle it in the parent function (main)
+    throw new Error(`fetchArticle: ${error.message}.`);
+  }
 }
+
+// Main function to orchestrate async functions
+async function main() {
+  const sourceText = searchInput.value.trim();
+
+  if (sourceText === "") {
+    return;
+  }
+
+  const sourceLang = "nl";
+  const currentState = { query: sourceText, lang: sourceLang };
+
+  showLoadingIndicator();
+  history.pushState(currentState, "", `?q=${sourceText}`);
+
+  try {
+    const promises = [
+      ...targetLanguages.map((targetLang) =>
+        translateText(sourceText, sourceLang, targetLang)
+      ),
+      fetchDeHetWord(sourceText),
+      fetchImages(sourceText),
+      fetchArticle(sourceText, "nl"),
+    ];
+
+    const results = await Promise.allSettled(promises);
+
+    handleRejectedPromises(results);
+    hideLoadingIndicator();
+  } catch (error) {
+    console.error(error);
+    errorContainer.textContent = error;
+    errorContainer.style.display = "block";
+    hideLoadingIndicator();
+  }
+}
+
+// Event listener for popstate event
+window.onpopstate = async function (event) {
+  if (event.state) {
+    const { query, lang } = event.state;
+    searchInput.value = query;
+    const sourceLang = lang;
+
+    showLoadingIndicator();
+
+    try {
+      const promises = [
+        ...targetLanguages.map((targetLang) =>
+          translateText(query, lang, targetLang)
+        ),
+        fetchDeHetWord(query),
+        fetchImages(query),
+        fetchArticle(query, lang),
+      ];
+
+      const results = await Promise.allSettled(promises);
+
+      handleRejectedPromises(results);
+      hideLoadingIndicator();
+    } catch (error) {
+      console.error(error);
+      errorContainer.textContent = error;
+      errorContainer.style.display = "block";
+      hideLoadingIndicator();
+    }
+  }
+};
