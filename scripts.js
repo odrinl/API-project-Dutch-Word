@@ -14,78 +14,43 @@ searchInput.addEventListener("keydown", (event) => {
   }
 });
 
-// Function to handle translation
-async function main() {
-  const sourceText = searchInput.value.trim();
-
-  // Check if the source text is empty
-  if (sourceText === "") {
-    return;
-  }
-
-  const sourceLang = "nl";
-
-  // Show loading indicator and hide error container
+// Display loading indicator
+function showLoadingIndicator() {
   loadingIndicator.style.display = "block";
   errorContainer.style.display = "none";
-
-  // Save search query to browser history
-  const currentState = {
-    query: sourceText,
-    lang: sourceLang,
-  };
-  history.pushState(currentState, "", `?q=${sourceText}`);
-
-  try {
-    // Call translation, fetch "de/het" word, fetch images, and fetch Wikipedia article in parallel
-    await Promise.all([
-      ...targetLanguages.map((targetLang) =>
-        translateText(sourceText, sourceLang, targetLang)
-      ),
-      fetchDeHetWord(sourceText),
-      fetchImages(sourceText),
-      fetchArticle(sourceText, "nl"),
-    ]);
-
-    // Hide loading indicator on successful completion
-    loadingIndicator.style.display = "none";
-  } catch (error) {
-    console.error("Error:", error);
-    // Show error message to the user
-    errorContainer.textContent = "Error: " + error;
-    errorContainer.style.display = "block";
-    // Hide loading indicator in case of an error
-    loadingIndicator.style.display = "none";
-  }
 }
 
-// Event listener for popstate event
-window.onpopstate = async function (event) {
-  if (event.state) {
-    const { query, lang } = event.state;
-    searchInput.value = query;
-    const sourceLang = lang;
+// Hide loading indicator
+function hideLoadingIndicator() {
+  loadingIndicator.style.display = "none";
+}
 
-    try {
-      // Call translation, fetch "de/het" word, fetch images, and fetch Wikipedia article in parallel
-      await Promise.all([
-        ...targetLanguages.map((targetLang) =>
-          translateText(query, lang, targetLang)
-        ),
-        fetchDeHetWord(query),
-        fetchImages(query),
-        fetchArticle(query, lang),
-      ]);
-    } catch (error) {
-      console.error("Error:", error);
-    // Show error message to the user
-    errorContainer.textContent = "Error: " + error;
-    errorContainer.style.display = "block";
-    // Hide loading indicator in case of an error
-    loadingIndicator.style.display = "none";
-    }
+// Display error messages
+function displayErrorMessages(errorMessages) {
+  errorContainer.innerText = errorMessages.join("\n");
+  console.error("Errors:", errorMessages.join("\n"));
+  errorContainer.style.display = "block";
+  hideLoadingIndicator();
+}
+
+// Handle rejected promises
+function handleRejectedPromises(results) {
+  const errorMessages = [];
+  const rejectedPromiseIndices = results
+    .map((result, index) => ({ result, index }))
+    .filter(({ result }) => result.status === "rejected")
+    .map(({ index }) => index);
+
+  if (rejectedPromiseIndices.length > 0) {
+    rejectedPromiseIndices.forEach((index) => {
+      const errorMessage = `Error in function [${index}] ${
+        results[index].reason.message
+      }`;
+      errorMessages.push(errorMessage);
+    });
+    displayErrorMessages(errorMessages);
   }
-};
+}
 
 // Function to translate text
 async function translateText(sourceText, sourceLang, targetLang) {
@@ -102,7 +67,8 @@ async function translateText(sourceText, sourceLang, targetLang) {
     translatedWordElement.textContent = responseData[0][0][0];
   } catch (error) {
     console.error("Error:", error);
-    throw error;
+    // Re-throw the error to handle it in the parent function (main)
+    throw new Error(`translateText ${sourceLang}-${targetLang}: ${error.message}.`); 
   }
 }
 
@@ -125,10 +91,10 @@ async function fetchDeHetWord(word) {
     dehetContainer.innerHTML = firstPageExtract.replace(firstWord, `<span class="first-word">${firstWord}</span>`);
   } catch (error) {
     console.error("Error:", error);
-    throw error; // Re-throw the error to handle it in the parent function (main)
+    // Re-throw the error to handle it in the parent function (main)
+    throw new Error(`fetchDeHetWord: ${error.message}.`); 
   }
 }
-
 // Function to fetch images
 async function fetchImages(query) {
   const API_KEY = "38259307-8733456e700ed630a3379faf0";
@@ -156,9 +122,11 @@ async function fetchImages(query) {
     }
   } catch (error) {
     console.error("Error:", error);
-    throw error; // Re-throw the error to handle it in the parent function (main)
+    // Re-throw the error to handle it in the parent function (main)
+    throw new Error(`fetchImages: ${error.message}.`); 
   }
 }
+
 
 // Function to fetch Wikipedia article
 async function fetchArticle(query, lang) {
@@ -238,7 +206,75 @@ async function fetchArticle(query, lang) {
       });
     }
   } catch (error) {
-    console.error("Error:", error);
-    throw error; // Re-throw the error to handle it in the parent function (main)
+    // Re-throw the error to handle it in the parent function (main)
+    throw new Error(`fetchArticle: ${error.message}.`);
   }
 }
+
+// Main function to orchestrate async functions
+async function main() {
+  const sourceText = searchInput.value.trim();
+
+  if (sourceText === "") {
+    return;
+  }
+
+  const sourceLang = "nl";
+  const currentState = { query: sourceText, lang: sourceLang };
+
+  showLoadingIndicator();
+  history.pushState(currentState, "", `?q=${sourceText}`);
+
+  try {
+    const promises = [
+      ...targetLanguages.map((targetLang) =>
+        translateText(sourceText, sourceLang, targetLang)
+      ),
+      fetchDeHetWord(sourceText),
+      fetchImages(sourceText),
+      fetchArticle(sourceText, "nl"),
+    ];
+
+    const results = await Promise.allSettled(promises);
+
+    handleRejectedPromises(results);
+    hideLoadingIndicator();
+  } catch (error) {
+    console.error(error);
+    errorContainer.textContent = error;
+    errorContainer.style.display = "block";
+    hideLoadingIndicator();
+  }
+}
+
+// Event listener for popstate event
+window.onpopstate = async function (event) {
+  if (event.state) {
+    const { query, lang } = event.state;
+    searchInput.value = query;
+    const sourceLang = lang;
+
+    showLoadingIndicator();
+
+    try {
+      const promises = [
+        ...targetLanguages.map((targetLang) =>
+          translateText(query, lang, targetLang)
+        ),
+        fetchDeHetWord(query),
+        fetchImages(query),
+        fetchArticle(query, lang),
+      ];
+
+      const results = await Promise.allSettled(promises);
+
+      handleRejectedPromises(results);
+      hideLoadingIndicator();
+    } catch (error) {
+      console.error(error);
+      errorContainer.textContent = error;
+      errorContainer.style.display = "block";
+      hideLoadingIndicator();
+    }
+  }
+};
