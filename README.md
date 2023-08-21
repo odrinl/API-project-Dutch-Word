@@ -4,7 +4,7 @@ Link - <https://odrinl.github.io/API-project-Dutch-Word/>
 
 ## Description
 
-Client-side web application. Dictionary app where foreigner can find all you need about any Dutch word - simultanious translation into 5 different languges, correct article, relevant pictures, and explanation in Dutch (Wikipedia article). Everithing on one screen. I have been dreaming about this app for so long and finally it's time to make this dream come true.
+Client-side web application. Dictionary app where foreigner can find all about any Dutch word - simultanious translation into 5 different languges, correct article, relevant pictures, and explanation in Dutch (Wikipedia article). Everithing on one screen. I have been dreaming about this app for so long and finally it's time to make this dream come true.
 
 ## Design
 
