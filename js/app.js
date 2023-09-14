@@ -4,6 +4,9 @@ import { main } from './main.js';
 // Event listener for translate button click
 translateButton.addEventListener("click", () => {
   const sourceText = searchInput.value.trim();
+  if (sourceText === "") {
+    return;
+  }
   main(sourceText, sourceLang);
 });
 

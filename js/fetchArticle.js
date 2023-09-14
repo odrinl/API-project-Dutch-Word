@@ -1,10 +1,9 @@
 // Function to fetch Wikipedia article
-import { searchInput, translateButton } from './constants.js';
+import { searchInput, translateButton, articleContainer } from './constants.js';
 export async function fetchArticle(query, lang) {
   const URL = `https://${lang}.wikipedia.org/w/api.php?action=query&origin=*&prop=extracts&format=json&exintro=&titles=${encodeURIComponent(
     query
   )}`;
-
   try {
     const fetchResponse = await fetch(URL);
     const responseData = await fetchResponse.json();
@@ -16,8 +15,7 @@ export async function fetchArticle(query, lang) {
     if (pageKeys.length > 0) {
       const firstPageId = pageKeys[0];
       const firstPageExtract = queryPages[firstPageId].extract;
-
-      const articleContainer = document.getElementById("article-container");
+      
       articleContainer.innerHTML = firstPageExtract;
 
       // Find all <li> elements within the article container
@@ -77,7 +75,6 @@ export async function fetchArticle(query, lang) {
       });
     }
   } catch (error) {
-    // Re-throw the error to handle it in the parent function (main)
-    throw new Error(`fetchArticle: ${error.message}.`);
+    articleContainer.innerHTML = `<p style="color: grey"><i>Error - ${error.message}</i></p>`;
   }
 }

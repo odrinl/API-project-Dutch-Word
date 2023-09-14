@@ -1,4 +1,4 @@
-import { searchInput } from './constants.js';
+import { searchInput, dehetContainer } from './constants.js';
 // Function to fetch "de/het" word
 export async function fetchDeHetWord(word) {
   const fetchDeHetWord = searchInput.value;
@@ -9,7 +9,6 @@ export async function fetchDeHetWord(word) {
   try {
     const fetchResponse = await fetch(url);
     const responseData = await fetchResponse.json();
-    const dehetContainer = document.getElementById("dehet-container");
     dehetContainer.textContent = responseData[0][0][0];
 
     // Highlight the first word in the "de/het" word
