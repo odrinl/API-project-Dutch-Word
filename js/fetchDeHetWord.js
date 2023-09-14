@@ -1,3 +1,4 @@
+import { searchInput } from './constants.js';
 // Function to fetch "de/het" word
 export async function fetchDeHetWord(word) {
   const fetchDeHetWord = searchInput.value;

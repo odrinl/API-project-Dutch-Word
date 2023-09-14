@@ -1,5 +1,6 @@
 // Function to fetch Wikipedia article
-async function fetchArticle(query, lang) {
+import { searchInput, translateButton } from './constants.js';
+export async function fetchArticle(query, lang) {
   const URL = `https://${lang}.wikipedia.org/w/api.php?action=query&origin=*&prop=extracts&format=json&exintro=&titles=${encodeURIComponent(
     query
   )}`;

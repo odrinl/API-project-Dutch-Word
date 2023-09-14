@@ -2,7 +2,7 @@ import { translateText } from './translateText.js';
 import { fetchDeHetWord } from './fetchDeHetWord.js';
 import { fetchImages } from './fetchImages.js';
 import { fetchArticle } from './fetchArticle.js';
-import { loadingIndicator, errorContainer, targetLanguages } from './constants.js';
+import { searchInput,loadingIndicator, errorContainer, targetLanguages } from './constants.js';
 
 // Display loading indicator
 function showLoadingIndicator() {
@@ -43,9 +43,15 @@ function handleRejectedPromises(results) {
 }
 
 let isNavigating = false;
+
 // Main function to orchestrate async functions
 export async function main(sourceText, sourceLang) {
   showLoadingIndicator();
+  // Ensure sourceText and sourceLang are properly defined
+  if (!sourceText || !sourceLang) {
+    console.error("Invalid sourceText or sourceLang");
+    return;
+  }
   if (!isNavigating) {
   history.pushState({ query: sourceText, lang: sourceLang }, "", `?q=${sourceText}`);
   }
@@ -56,7 +62,7 @@ export async function main(sourceText, sourceLang) {
       ),
       fetchDeHetWord(sourceText),
       fetchImages(sourceText),
-      fetchArticle(sourceText, "nl"),
+      fetchArticle(sourceText, sourceLang),
     ];
 
     const results = await Promise.allSettled(promises);

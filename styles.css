@@ -65,7 +65,7 @@ body {
   background-color: #c8a36f;
 }
 
-#translation-container {
+#translation-container div{
   display: flex;
   flex-wrap: wrap;
   font-size: 18px;
