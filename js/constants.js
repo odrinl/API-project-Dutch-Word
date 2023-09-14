@@ -8,3 +8,4 @@ export const translationContainer = document.getElementById('translation-contain
 export const dehetContainer = document.getElementById("dehet-container");
 export const articleContainer = document.getElementById("article-container");
 export const imagesContainer = document.getElementById("images-container");
+export const wikimediaContainer = document.getElementById("wikimedia-container");
