@@ -12,11 +12,12 @@ export async function fetchForms(query, lang) {
     // Extract the forms information from the parsed HTML content
     if (!responseData.parse) {
       console.log(responseData.error.info);
-      formsContainer.innerHTML = `<p style="color: grey"><i>${responseData.error.info}.</i></p>`;
+      // formsContainer.innerHTML = `<p style="color: grey"><i>${responseData.error.info}.</i></p>`;
     } else {
       const htmlContent = responseData.parse.text;
       const formsHTMLCollection = extractFormsTableFromHtml(htmlContent);
-      const forms = Array.from(formsHTMLCollection);
+      const formsFullArray = Array.from(formsHTMLCollection);
+      const forms = Array.from(formsFullArray).slice(0, 2);
    
       if (forms) {
         forms.forEach((form) => {

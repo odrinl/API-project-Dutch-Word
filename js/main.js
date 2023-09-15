@@ -8,12 +8,12 @@ import { fetchForms } from './fetchForms.js';
 
 // Display loading indicator
 function showLoadingIndicator() {
-  loadingIndicator.style.display = "block";
+  loadingIndicator.style.display = 'block';
 }
 
 // Hide loading indicator
 function hideLoadingIndicator() {
-  loadingIndicator.style.display = "none";
+  loadingIndicator.style.display = 'none';
 }
 
 let isNavigating = false;
@@ -23,30 +23,36 @@ export async function main(sourceText, sourceLang) {
   showLoadingIndicator();
   // Ensure sourceText and sourceLang are properly defined
   if (!sourceText || !sourceLang) {
-    console.error("Invalid sourceText or sourceLang");
+    console.error('Invalid sourceText or sourceLang');
     return;
   }
   if (!isNavigating) {
-  history.pushState({ query: sourceText, lang: sourceLang }, "", `?q=${sourceText}`);
+    history.pushState(
+      { query: sourceText, lang: sourceLang },
+      '',
+      `?q=${sourceText}`
+    );
   }
   try {
+    for (const targetLang of targetLanguages) {
+      await translateText(sourceText, sourceLang, targetLang);
+    }
     // const promises = [
     //   ...targetLanguages.map((targetLang) =>
     //     translateText(sourceText, sourceLang, targetLang)
     //   ),
-    //   fetchDeHetWord(sourceText, sourceLang),
-    //   fetchImages(sourceText),
-    //   fetchArticle(sourceText, sourceLang),
-    // ];
+    await fetchDeHetWord(sourceText, sourceLang),
+    await fetchImages(sourceText),
+    await fetchArticle(sourceText, sourceLang),
+      // ];
 
-    // await Promise.allSettled(promises);
+      // await Promise.allSettled(promises);
     await fetchMediawiki(sourceText, sourceLang);
     await fetchDeHetWord(sourceText, sourceLang);
     await fetchForms(sourceText, sourceLang);
 
     hideLoadingIndicator();
     isNavigating = false;
-
   } catch (error) {
     console.error(error);
     hideLoadingIndicator();
