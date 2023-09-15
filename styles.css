@@ -112,6 +112,12 @@ p {
   margin: 5px;
 }
 
+#mediawiki-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
 #article-container {
   display: flex;
   flex-direction: column;

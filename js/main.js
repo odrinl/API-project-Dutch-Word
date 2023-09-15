@@ -3,6 +3,7 @@ import { fetchDeHetWord } from './fetchDeHetWord.js';
 import { fetchImages } from './fetchImages.js';
 import { fetchArticle } from './fetchArticle.js';
 import { searchInput, loadingIndicator, targetLanguages } from './constants.js';
+import { fetchMediawiki } from './fetchMediawiki.js';
 
 // Display loading indicator
 function showLoadingIndicator() {
@@ -28,16 +29,17 @@ export async function main(sourceText, sourceLang) {
   history.pushState({ query: sourceText, lang: sourceLang }, "", `?q=${sourceText}`);
   }
   try {
-    const promises = [
-      ...targetLanguages.map((targetLang) =>
-        translateText(sourceText, sourceLang, targetLang)
-      ),
-      fetchDeHetWord(sourceText),
-      fetchImages(sourceText),
-      fetchArticle(sourceText, sourceLang),
-    ];
+    // const promises = [
+    //   ...targetLanguages.map((targetLang) =>
+    //     translateText(sourceText, sourceLang, targetLang)
+    //   ),
+    //   fetchDeHetWord(sourceText),
+    //   fetchImages(sourceText),
+    //   fetchArticle(sourceText, sourceLang),
+    // ];
 
-    await Promise.allSettled(promises);
+    // await Promise.allSettled(promises);
+    await fetchMediawiki(sourceText, sourceLang);
 
     hideLoadingIndicator();
     isNavigating = false;

@@ -25,8 +25,7 @@ export async function fetchImages(query) {
       });
     }
   } catch (error) {
-    console.error("Error:", error);
-    // Re-throw the error to handle it in the parent function (main)
-    throw new Error(`fetchImages: ${error.message}.`); 
+    console.error(error);
+    imagesContainer.innerHTML = `<p style="color: grey" align="center"><i>Error - ${error.message}</i></p>`
   }
 }

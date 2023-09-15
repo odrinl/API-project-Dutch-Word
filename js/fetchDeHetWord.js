@@ -16,8 +16,7 @@ export async function fetchDeHetWord(word) {
     const firstWord = firstPageExtract.split(' ')[0];
     dehetContainer.innerHTML = firstPageExtract.replace(firstWord, `<span class="first-word">${firstWord}</span>`);
   } catch (error) {
-    console.error("Error:", error);
-    // Re-throw the error to handle it in the parent function (main)
-    throw new Error(`fetchDeHetWord: ${error.message}.`); 
+    console.error(error);
+    dehetContainer.innerHTML = `<p style="color: grey" align="center"><i>Error - ${error.message}</i></p>`
   }
 }

@@ -3,7 +3,7 @@ import { main } from './main.js';
 
 // Event listener for translate button click
 translateButton.addEventListener("click", () => {
-  const sourceText = searchInput.value.trim();
+  const sourceText = searchInput.value.toLowerCase().trim();
   if (sourceText === "") {
     return;
   }
@@ -12,7 +12,7 @@ translateButton.addEventListener("click", () => {
 
 // Event listener for search input keydown
 searchInput.addEventListener("keydown", (event) => {
-  const sourceText = searchInput.value.trim();
+  const sourceText = searchInput.value.toLowerCase().trim();
   if (event.key === "Enter") {
     if (sourceText === "") {
       return;
