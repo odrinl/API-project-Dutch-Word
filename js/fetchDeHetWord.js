@@ -1,22 +1,62 @@
-import { searchInput, dehetContainer } from './constants.js';
-// Function to fetch "de/het" word
-export async function fetchDeHetWord(word) {
-  const fetchDeHetWord = searchInput.value;
+import { mediawikiContainer, dehetContainer } from './constants.js';
 
-  // Construct the URL for fetching the "de/het" word
-  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=nl&dt=t&q=the ${fetchDeHetWord}`;
+// Function to fetch "de/het" word
+export async function fetchDeHetWord(sourceText, sourceLang) {
+  const URL = `https://${sourceLang}.wiktionary.org/w/api.php?action=parse&format=json&page=${sourceText}&prop=text&formatversion=2&origin=*`;
+
+  dehetContainer.innerHTML = '';
 
   try {
-    const fetchResponse = await fetch(url);
+    const fetchResponse = await fetch(URL);
     const responseData = await fetchResponse.json();
-    dehetContainer.textContent = responseData[0][0][0];
 
-    // Highlight the first word in the "de/het" word
-    const firstPageExtract = dehetContainer.textContent.trim();
-    const firstWord = firstPageExtract.split(' ')[0];
-    dehetContainer.innerHTML = firstPageExtract.replace(firstWord, `<span class="first-word">${firstWord}</span>`);
+    // Extract the gender information from the parsed HTML content
+    if (!responseData.parse) {
+      console.log(responseData.error.info);
+      dehetContainer.innerHTML = `<p style="color: grey"><i>${responseData.error.info}. Input is case sensitive, check that regular word doesn't have uppercase letters.</i></p>`;
+    } else {
+      const htmlContent = responseData.parse.text;
+      const genderWord = findGenderInHtml(htmlContent, sourceText);
+
+      // Highlight the first word in the "de/het" word
+      if (genderWord) {
+        dehetContainer.innerHTML = `<span class="first-word">${genderWord}</span> ${sourceText}`;
+      } else {
+        console.error('Gender not found on the page.');
+      }
+    }
   } catch (error) {
-    console.error(error);
-    dehetContainer.innerHTML = `<p style="color: grey" align="center"><i>Error - ${error.message}</i></p>`
+    console.log(error);
+    mediawikiContainer.innerHTML = `<p style="color: grey" align="center"><i>${error.message}</i></p>`;
+  }
+}
+
+function findGenderInHtml(htmlContent, sourceText) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlContent, 'text/html');
+  const header = doc.getElementById('Zelfstandig_naamwoord');
+  console.log(header);
+  if (header) {
+    // Get the letter inside the <span> element after the header
+    const span =
+      header.parentElement.nextElementSibling.querySelector('p span');
+    console.log(span);
+    if (span) {
+      const gender = span.textContent.trim();
+
+      console.log(gender);
+
+      if (gender === 'o') {
+        const genderWord = 'het';
+        console.log(genderWord);
+        return genderWord;
+      } else {
+        const genderWord = 'de';
+        console.log(genderWord);
+        return genderWord;
+      }
+    } else {
+      console.log('Gender not found.');
+    }
   }
 }

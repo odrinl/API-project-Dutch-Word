@@ -2,9 +2,8 @@ import { translationContainer } from './constants.js';
 
 // Function to translate text
 export async function translateText(sourceText, sourceLang, targetLang) {
-  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(
-    sourceText
-  )}`;
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${sourceText}`;
+
   try {
     const fetchResponse = await fetch(url);
     const responseData = await fetchResponse.json();
@@ -14,6 +13,6 @@ export async function translateText(sourceText, sourceLang, targetLang) {
     translatedWordElement.textContent = responseData[0][0][0];
   } catch (error) {
     console.error(error);
-    translationContainer.innerHTML = `<p style="color: grey" align="center"><i>Error - ${error.message}</i></p>`
+    translationContainer.innerHTML = `<p style="color: grey" align="center"><i>${error.message}.</i></p>`
   }
 }

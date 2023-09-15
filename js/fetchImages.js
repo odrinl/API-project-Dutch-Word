@@ -26,6 +26,6 @@ export async function fetchImages(query) {
     }
   } catch (error) {
     console.error(error);
-    imagesContainer.innerHTML = `<p style="color: grey" align="center"><i>Error - ${error.message}</i></p>`
+    imagesContainer.innerHTML = `<p style="color: grey" align="center"><i>${error.message}</i></p>`
   }
 }

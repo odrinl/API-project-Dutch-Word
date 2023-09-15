@@ -33,13 +33,14 @@ export async function main(sourceText, sourceLang) {
     //   ...targetLanguages.map((targetLang) =>
     //     translateText(sourceText, sourceLang, targetLang)
     //   ),
-    //   fetchDeHetWord(sourceText),
+    //   fetchDeHetWord(sourceText, sourceLang),
     //   fetchImages(sourceText),
     //   fetchArticle(sourceText, sourceLang),
     // ];
 
     // await Promise.allSettled(promises);
     await fetchMediawiki(sourceText, sourceLang);
+    await fetchDeHetWord(sourceText, sourceLang);
 
     hideLoadingIndicator();
     isNavigating = false;

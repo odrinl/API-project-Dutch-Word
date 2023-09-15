@@ -141,6 +141,15 @@ footer {
   margin: 40px 0;
 }
 
+.title a {
+  text-decoration: none;
+  color: #4888d1 !important;
+}
+
+.title a:hover {
+  text-decoration: underline;
+}
+
 footer a {
   color: #011318;
   text-decoration: none;

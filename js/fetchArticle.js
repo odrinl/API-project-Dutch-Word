@@ -76,6 +76,6 @@ export async function fetchArticle(query, lang) {
     }
   } catch (error) {
     console.log(error);
-    articleContainer.innerHTML = `<p style="color: grey"><i>Error - ${error.message}</i></p>`;
+    articleContainer.innerHTML = `<p style="color: grey"><i>${error.message}</i></p>`;
   }
 }

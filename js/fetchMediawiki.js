@@ -9,10 +9,10 @@ export async function fetchMediawiki(query, lang) {
     const fetchResponse = await fetch(URL);
     const responseData = await fetchResponse.json();
 
-    // Extract the pronunciation information from the parsed HTML content (modify this based on the HTML structure).
+    // Extract the pronunciation information from the parsed HTML content 
     if (!responseData.parse) {
       console.log(responseData.error.info);
-      mediawikiContainer.innerHTML = `<p style="color: grey"><i>Error - ${responseData.error.info}</i></p>`;
+      mediawikiContainer.innerHTML = `<p style="color: grey"><i>${responseData.error.info}. Input is case sensitive, check that regular word doesn't have uppercase letters.</i></p>`;
     } else {
       const htmlContent = responseData.parse.text;
       const pronunciation = extractPronunciationFromHtml(htmlContent);
@@ -29,7 +29,7 @@ export async function fetchMediawiki(query, lang) {
     }
   } catch (error) {
     console.log(error);
-    mediawikiContainer.innerHTML = `<p style="color: grey" align="center"><i>Error - ${error.message}</i></p>`;
+    mediawikiContainer.innerHTML = `<p style="color: grey" align="center"><i>${error.message}</i></p>`;
   }
 }
 
