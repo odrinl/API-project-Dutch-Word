@@ -23,6 +23,7 @@ export async function fetchDeHetWord(sourceText, sourceLang) {
         dehetContainer.innerHTML = `<span class="first-word">${genderWord}</span> ${sourceText}`;
       } else {
         console.error('Gender not found on the page.');
+        dehetContainer.innerHTML = `<p style="color: grey" align="center"><i>Gender not found.</i></p>`;
       }
     }
   } catch (error) {
@@ -35,24 +36,18 @@ function findGenderInHtml(htmlContent, sourceText) {
   const parser = new DOMParser();
   const doc = parser.parseFromString(htmlContent, 'text/html');
   const header = doc.getElementById('Zelfstandig_naamwoord');
-  console.log(header);
   if (header) {
     // Get the letter inside the <span> element after the header
     const span =
       header.parentElement.nextElementSibling.querySelector('p span');
-    console.log(span);
     if (span) {
       const gender = span.textContent.trim();
 
-      console.log(gender);
-
       if (gender === 'o') {
         const genderWord = 'het';
-        console.log(genderWord);
         return genderWord;
       } else {
         const genderWord = 'de';
-        console.log(genderWord);
         return genderWord;
       }
     } else {

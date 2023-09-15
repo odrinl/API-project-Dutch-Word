@@ -9,3 +9,4 @@ export const dehetContainer = document.getElementById("dehet-container");
 export const articleContainer = document.getElementById("article-container");
 export const imagesContainer = document.getElementById("images-container");
 export const mediawikiContainer = document.getElementById("mediawiki-container");
+export const formsContainer = document.getElementById("forms-container");

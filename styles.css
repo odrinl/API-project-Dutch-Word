@@ -159,3 +159,28 @@ footer a:hover {
   text-decoration: underline;
 }
 
+#forms-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around
+}
+
+table.infobox {
+  text-align: center;
+  float: right;
+  clear: right;
+  margin: 0.5em 0 0 0;
+  background-color: #FFFFE0;
+  border: 1px solid #AAAAAA;
+  border-collapse: collapse;
+  font-size: 100%
+}
+
+table.infobox td,tr,th {
+  border: 1px solid #AAAAAA;
+  border-collapse: collapse;
+  border-spacing: 0px;
+  padding: 4px;
+  vertical-align: middle
+}

@@ -33,7 +33,7 @@ export async function fetchMediawiki(query, lang) {
   }
 }
 
-// Function to extract pronunciation from HTML content (you need to implement this).
+// Function to extract pronunciation from HTML content
 function extractPronunciationFromHtml(htmlContent) {
   // Create a DOMParser
   const parser = new DOMParser();

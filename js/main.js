@@ -4,6 +4,7 @@ import { fetchImages } from './fetchImages.js';
 import { fetchArticle } from './fetchArticle.js';
 import { searchInput, loadingIndicator, targetLanguages } from './constants.js';
 import { fetchMediawiki } from './fetchMediawiki.js';
+import { fetchForms } from './fetchForms.js';
 
 // Display loading indicator
 function showLoadingIndicator() {
@@ -41,6 +42,7 @@ export async function main(sourceText, sourceLang) {
     // await Promise.allSettled(promises);
     await fetchMediawiki(sourceText, sourceLang);
     await fetchDeHetWord(sourceText, sourceLang);
+    await fetchForms(sourceText, sourceLang);
 
     hideLoadingIndicator();
     isNavigating = false;
