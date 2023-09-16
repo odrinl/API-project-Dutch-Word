@@ -2,11 +2,9 @@ import { API_KEY} from './constants.js';
 import { imagesContainer  } from './constants.js';
 
 // Function to fetch images
-export async function fetchImages(query) {
+export async function fetchImages(query, lang) {
   const ImagesPerPage = 5;
-  const URL = `https://pixabay.com/api/?key=${API_KEY}&q=${encodeURIComponent(
-    query
-  )}&lang=nl&image_type=photo&safesearch=true&per_page=${ImagesPerPage}`;
+  const URL = `https://pixabay.com/api/?key=${API_KEY}&q=${query}&lang=${lang}&image_type=photo&safesearch=true&per_page=${ImagesPerPage}`;
 
   try {
     const fetchResponse = await fetch(URL);

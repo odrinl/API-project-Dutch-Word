@@ -38,7 +38,7 @@ export async function main(sourceText, sourceLang) {
       await translateText(sourceText, sourceLang, targetLang);
     } 
     await fetchDeHetWord(sourceText, sourceLang),
-    await fetchImages(sourceText),
+    await fetchImages(sourceText, sourceLang),
     await fetchArticle(sourceText, sourceLang),
     await fetchMediawiki(sourceText, sourceLang);
     await fetchDeHetWord(sourceText, sourceLang);
