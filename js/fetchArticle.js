@@ -1,81 +1,87 @@
 // Function to fetch Wikipedia article
 import { searchInput, translateButton, articleContainer } from './constants.js';
 export async function fetchArticle(query, lang) {
-  const URL = `https://${lang}.wikipedia.org/w/api.php?action=query&origin=*&prop=extracts&format=json&exintro=&titles=${encodeURIComponent(
-    query
-  )}`;
+  const URL = `https://${lang}.wikipedia.org/w/api.php?action=parse&prop=text&origin=*&page=${query}&format=json`;
   try {
     const fetchResponse = await fetch(URL);
     const responseData = await fetchResponse.json();
 
-    const queryPages = responseData.query.pages;
-    const pageKeys = Object.keys(queryPages);
+    // Extract the pronunciation information from the parsed HTML content
+    if (!responseData.parse) {
+      console.log(responseData.error.info);
+      articleContainer.innerHTML = `<p style="color: grey"><i>${responseData.error.info}.</i></p>`;
+    } else {
+      const htmlContent = responseData.parse.text;
+      const wikipage = getWikipage(htmlContent, query);
 
-    // Check if there are any pages
-    if (pageKeys.length > 0) {
-      const firstPageId = pageKeys[0];
-      const firstPageExtract = queryPages[firstPageId].extract;
-      
-      articleContainer.innerHTML = firstPageExtract;
-
-      // Find all <li> elements within the article container
-      const listElements = document.querySelectorAll("#article-container li");
-
-      // Iterate over each <li> element
-      listElements.forEach((listElement) => {
-        const listElementText = listElement.textContent;
-        const listElementWords = listElementText
-          .split(/(\b|\s+|[()]|[,]|[-])(?<!\w-)(?!\s+)/)
-          .filter(Boolean);
-
-        let linkTextWords = [];
-        const stopWords = ["),", ")", ",", "-"];
-        let hasStopElement = false;
-
-        // Check if the words contain stop elements or if the length is less than 4
-        if (listElementWords.some((word) => stopWords.includes(word)) || listElementWords.length < 4) {
-          const linkElement = document.createElement("a");
-          linkElement.id = "wiki-link";
-          linkElement.style.textDecoration = "underline";
-          linkElement.style.cursor = "pointer";
-          linkElement.style.color = "#48bed8";
-
-          // Iterate over each word
-          for (const word of listElementWords) {
-            if (stopWords.includes(word)) {
-              hasStopElement = true;
-
-              // Handle different stop elements
-              if (word === "-") {
-                linkTextWords.pop(); // Remove the space before hyphen
-              }
-              if (word === ")") {
-                linkTextWords.push(")");
-              }
-              if (word === "),") {
-                linkTextWords.push(")"); // Add ")" without the comma
-              }
-              break;
-            }
-            linkTextWords.push(word);
-          }
-
-          const linkWordsText = linkTextWords.join("");
-          linkElement.textContent = linkWordsText;
-          const modifiedText = listElementText.replace(linkWordsText, linkElement.outerHTML);
-          listElement.innerHTML = modifiedText;
-          const wikiLinkElement = listElement.querySelector("#wiki-link");
-
-          // Add click event listener to the link element
-          wikiLinkElement.addEventListener("click", () => {
-            searchInput.value = wikiLinkElement.textContent;
+      // insert the wikipage in the page
+      if (wikipage) {
+        articleContainer.innerHTML = wikipage;
+        const linkElements = articleContainer.querySelectorAll('a');
+        // Add click event listeners to all link elements of table
+        linkElements.forEach((linkElement) => {
+          linkElement.addEventListener('click', (event) => {
+            event.preventDefault();
+            searchInput.value = linkElement.textContent;
             translateButton.click();
           });
-        }
-      });
+        });
+      } else {
+        console.error('Wikipage not found');
+      }
     }
   } catch (error) {
     console.log(error);
-    articleContainer.innerHTML = `<p style="color: grey"><i>${error.message}</i></p>`;
+    articleContainer.innerHTML = `<p style="color: grey" align="center"><i>${error.message}</i></p>`;
+  }
+}
+
+// Function to extract pronunciation from HTML content
+function getWikipage(htmlContent, query) {
+  // Create a DOMParser
+  const parser = new DOMParser();
+  // Parse the HTML content
+  const doc = parser.parseFromString(htmlContent['*'], 'text/html');
+  const extractedHTML = doc.querySelector('.mw-parser-output');
+  // Find the <p><b>Vogel</b></p> element
+  const startElement = extractedHTML.querySelector('p b');
+  let wikipageHTML;
+  let endElement;
+  if (startElement) {
+    const endElement2 = extractedHTML.querySelector('.toc');
+
+    if (endElement2) {
+      endElement = endElement2;
+    }
+    if (!endElement) {
+      endElement = extractedHTML.querySelector('.mw-headline');
+    }
+    if (!endElement) {
+      endElement = extractedHTML.querySelector('p br');
+    }
+    if (!endElement && endElement) {
+      endElement = endElement2;
+    }
+    if (startElement && endElement) {
+      // Create a range to select the desired content
+      const range = document.createRange();
+      range.setStartBefore(startElement.parentElement);
+      range.setEndBefore(endElement);
+
+      // Create a document fragment and append the selected content to it
+      const fragment = range.cloneContents();
+
+      // Convert the fragment to an HTML string
+      wikipageHTML = new XMLSerializer().serializeToString(fragment);
+    }
+  } else {
+    wikipageHTML = extractedHTML.innerHTML;
+  }
+
+  if (wikipageHTML) {
+    return wikipageHTML;
+  } else {
+    console.log('Wikipage not found');
+    return null;
   }
 }

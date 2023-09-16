@@ -184,3 +184,17 @@ table.infobox td,tr,th {
   padding: 4px;
   vertical-align: middle
 }
+
+table.infobox a {
+  color: #4888d1;
+}
+
+#article-container a {
+  color: #4888d1;
+  text-decoration: none;
+
+}
+
+#article-container a:hover {
+  text-decoration: underline;
+}
