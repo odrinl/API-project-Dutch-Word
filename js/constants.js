@@ -1,0 +1,12 @@
+export const translateButton = document.getElementById("translate-button");
+export const sourceLang = "nl";
+export const searchInput = document.getElementById("search-input");
+export const loadingIndicator = document.getElementById("loading");
+export const targetLanguages = ["en", "ru", "uk", "ar", "ur", "tr","ti", "so","fa","fr"];
+export const API_KEY = "38259307-8733456e700ed630a3379faf0";
+export const translationContainer = document.getElementById('translation-container');
+export const dehetContainer = document.getElementById("dehet-container");
+export const articleContainer = document.getElementById("article-container");
+export const imagesContainer = document.getElementById("images-container");
+export const mediawikiContainer = document.getElementById("mediawiki-container");
+export const formsContainer = document.getElementById("forms-container");
