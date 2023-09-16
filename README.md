@@ -4,7 +4,7 @@ Link - <https://odrinl.github.io/API-project-Dutch-Word/>
 
 ## Description
 
-Dutch Word is API project and a client-side dictionary app with simultaneous translation any Dutch word into 10 different languages, audio with pronunciation, articles we have to use with nouns - "het" or "de", relevant pictures, and explanation in Dutch. All on one screen. I used API of Google Translate, Wiktionary, Wikipedia and Pixabay. I did this project in the time of API module during my study at HYF. I have been dreaming about such an application for so long and finally managed to do it by myself. I was very excited doing it.If you want to make it better - let me know by making a pull request.
+Dutch Word is API project and a client-side dictionary app with simultaneous translation any Dutch word into 10 different languages, audio with pronunciation, articles we have to use with nouns - "het" or "de", relevant pictures, and explanation in Dutch. All on one screen. I used API of Google Translate, Wiktionary, Wikipedia and Pixabay. I did this project in the time of API module during my study at HYF. I have been dreaming about such an application for a long time and finally managed to do it by myself. I was very excited doing it. If you want to make it better - let me know by making a pull request.
 
 ## Design
 
