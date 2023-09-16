@@ -13,7 +13,7 @@ export async function fetchDeHetWord(sourceText, sourceLang) {
     // Extract the gender information from the parsed HTML content
     if (!responseData.parse) {
       console.log(responseData.error.info);
-      // dehetContainer.innerHTML = `<p style="color: grey"><i>${responseData.error.info}. Input is case sensitive, check that regular word doesn't have uppercase letters.</i></p>`;
+      
     } else {
       const htmlContent = responseData.parse.text;
       const genderWord = findGenderInHtml(htmlContent, sourceText);

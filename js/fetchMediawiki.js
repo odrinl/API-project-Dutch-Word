@@ -17,7 +17,7 @@ export async function fetchMediawiki(query, lang) {
       const htmlContent = responseData.parse.text;
       const pronunciation = extractPronunciationFromHtml(htmlContent);
 
-      // Embed the audio in the page.
+      // Embed the audio in the page
       if (pronunciation) {
         const audioElement = document.createElement('audio');
         audioElement.controls = true;

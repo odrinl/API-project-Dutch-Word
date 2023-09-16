@@ -36,21 +36,14 @@ export async function main(sourceText, sourceLang) {
   try {
     for (const targetLang of targetLanguages) {
       await translateText(sourceText, sourceLang, targetLang);
-    }
-    // const promises = [
-    //   ...targetLanguages.map((targetLang) =>
-    //     translateText(sourceText, sourceLang, targetLang)
-    //   ),
+    } 
     await fetchDeHetWord(sourceText, sourceLang),
     await fetchImages(sourceText),
     await fetchArticle(sourceText, sourceLang),
-      // ];
-
-      // await Promise.allSettled(promises);
     await fetchMediawiki(sourceText, sourceLang);
     await fetchDeHetWord(sourceText, sourceLang);
     await fetchForms(sourceText, sourceLang);
-
+    
     hideLoadingIndicator();
     isNavigating = false;
   } catch (error) {

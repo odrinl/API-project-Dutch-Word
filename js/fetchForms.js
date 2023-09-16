@@ -12,7 +12,6 @@ export async function fetchForms(query, lang) {
     // Extract the forms information from the parsed HTML content
     if (!responseData.parse) {
       console.log(responseData.error.info);
-      // formsContainer.innerHTML = `<p style="color: grey"><i>${responseData.error.info}.</i></p>`;
     } else {
       const htmlContent = responseData.parse.text;
       const formsHTMLCollection = extractFormsTableFromHtml(htmlContent);
