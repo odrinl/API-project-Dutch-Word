@@ -17,7 +17,7 @@ export async function fetchMediawiki(query, lang) {
         await fetchMediawiki(query.toLowerCase(), lang);
       } else {
         console.log(responseData.error.info);
-        mediawikiContainer.innerHTML = `<p style="color: grey"><i>${responseData.error.info}. Input is case sensitive, check that regular word doesn't have uppercase letters.</i></p>`;
+        mediawikiContainer.innerHTML = `<p style="color: grey"><i>${responseData.error.info}.`;
       }
     } else {
       const htmlContent = responseData.parse.text;
