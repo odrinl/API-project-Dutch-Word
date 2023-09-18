@@ -1,18 +1,24 @@
 // Function to fetch Mediawiki article
-import {mediawikiContainer} from './constants.js';
+import { mediawikiContainer } from './constants.js';
 
 export async function fetchMediawiki(query, lang) {
   const URL = `https://${lang}.wiktionary.org/w/api.php?action=parse&format=json&page=${query}&prop=text&formatversion=2&origin=*`;
-  mediawikiContainer.innerHTML = "";
+  mediawikiContainer.innerHTML = '';
 
   try {
     const fetchResponse = await fetch(URL);
     const responseData = await fetchResponse.json();
 
-    // Extract the pronunciation information from the parsed HTML content 
+    // Extract the pronunciation information from the parsed HTML content
     if (!responseData.parse) {
-      console.log(responseData.error.info);
-      mediawikiContainer.innerHTML = `<p style="color: grey"><i>${responseData.error.info}. Input is case sensitive, check that regular word doesn't have uppercase letters.</i></p>`;
+      // Check if the query had an initial uppercase letter
+      if (query.charAt(0) === query.charAt(0).toUpperCase()) {
+        // Retry with the same query converted to lowercase
+        await fetchMediawiki(query.toLowerCase(), lang);
+      } else {
+        console.log(responseData.error.info);
+        mediawikiContainer.innerHTML = `<p style="color: grey"><i>${responseData.error.info}. Input is case sensitive, check that regular word doesn't have uppercase letters.</i></p>`;
+      }
     } else {
       const htmlContent = responseData.parse.text;
       const pronunciation = extractPronunciationFromHtml(htmlContent);
@@ -45,11 +51,9 @@ function extractPronunciationFromHtml(htmlContent) {
   if (audioLinkElement) {
     // Get the href attribute (the link)
     const audioLink = audioLinkElement.getAttribute('href');
-    return(`https:${audioLink}`);
+    return `https:${audioLink}`;
   } else {
     console.log('Element not found');
     return null;
   }
 }
-
-
