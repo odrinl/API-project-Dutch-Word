@@ -17,7 +17,7 @@ export async function fetchMediawiki(query, lang) {
         await fetchMediawiki(query.toLowerCase(), lang);
       } else {
         console.log(responseData.error.info);
-        mediawikiContainer.innerHTML = `<p style="color: grey"><i>${responseData.error.info}.`;
+        mediawikiContainer.innerHTML = `<p style="color: grey"><i>${responseData.error.info}.</i></p>`;
       }
     } else {
       const htmlContent = responseData.parse.text;
