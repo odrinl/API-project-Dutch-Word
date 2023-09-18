@@ -1,6 +1,6 @@
 # API project "Dutch Word"
 
-Link - <https://odrinl.github.io/dutch-word/>
+Link - <https://odrinl.github.io/dutch/>
 
 ## Description
 
