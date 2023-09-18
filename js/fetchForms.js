@@ -11,7 +11,13 @@ export async function fetchForms(query, lang) {
 
     // Extract the forms information from the parsed HTML content
     if (!responseData.parse) {
+      // Check if the query had an initial uppercase letter
+      if (query.charAt(0) === query.charAt(0).toUpperCase()) {
+        // Retry with the same query converted to lowercase
+        await fetchForms(query.toLowerCase(), lang);
+      } else {
       console.log(responseData.error.info);
+      }
     } else {
       const htmlContent = responseData.parse.text;
       const formsHTMLCollection = extractFormsTableFromHtml(htmlContent);
