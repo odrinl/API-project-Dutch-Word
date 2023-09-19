@@ -163,7 +163,11 @@ footer a:hover {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-around
+  justify-content: center;
+}
+
+#forms-container table {
+  margin: 10px 20px;
 }
 
 table.infobox {
